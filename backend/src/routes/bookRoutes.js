@@ -6,10 +6,10 @@ const {
   getBooks,
 } = require("../controllers/bookController");
 
-// POST → add a book
-router.post("/", addBook);
+const { protect } = require("../middleware/authMiddleware");
 
-// GET → get all books
-router.get("/", getBooks);
+// PROTECTED ROUTES 🔐
+router.post("/", protect, addBook);
+router.get("/", protect, getBooks);
 
 module.exports = router;
