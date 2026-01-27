@@ -17,6 +17,9 @@ app.use("/api", require("./routes/authRoutes"));
 // book routes ✅ ADD THIS
 app.use("/api/books", require("./routes/bookRoutes"));
 
+app.use("/api/orders", require("./routes/orderRoutes"));
+
+
 app.get("/", (req, res) => {
   res.send("Bookstore API is running");
 });
