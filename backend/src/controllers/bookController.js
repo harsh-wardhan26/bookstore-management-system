@@ -1,7 +1,7 @@
-const Book = require("../models/Book");
+import Book from "../models/Book.js";
 
 // ADD BOOK (Admin)
-exports.addBook = async (req, res) => {
+export const addBook = async (req, res) => {
   try {
     const book = await Book.create(req.body);
     res.status(201).json(book);
@@ -10,8 +10,8 @@ exports.addBook = async (req, res) => {
   }
 };
 
-// GET ALL BOOKS (Customer/Admin)
-exports.getBooks = async (req, res) => {
+// GET ALL BOOKS
+export const getBooks = async (req, res) => {
   try {
     const books = await Book.find();
     res.json(books);
@@ -21,20 +21,22 @@ exports.getBooks = async (req, res) => {
 };
 
 // GET SINGLE BOOK
-exports.getBookById = async (req, res) => {
+export const getBookById = async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
+
     if (!book) {
       return res.status(404).json({ message: "Book not found" });
     }
+
     res.json(book);
-  } catch (error) {
+  } catch {
     res.status(400).json({ message: "Invalid book ID" });
   }
 };
 
-// UPDATE BOOK (Admin)
-exports.updateBook = async (req, res) => {
+// UPDATE BOOK
+export const updateBook = async (req, res) => {
   try {
     const book = await Book.findByIdAndUpdate(
       req.params.id,
@@ -52,8 +54,8 @@ exports.updateBook = async (req, res) => {
   }
 };
 
-// DELETE BOOK (Admin)
-exports.deleteBook = async (req, res) => {
+// DELETE BOOK
+export const deleteBook = async (req, res) => {
   try {
     const book = await Book.findByIdAndDelete(req.params.id);
 

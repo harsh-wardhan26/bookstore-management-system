@@ -1,22 +1,24 @@
-const express = require("express");
+import express from "express";
+import Order from "../models/Order.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
 
-const {
-  createOrder,
-  getMyOrders,
-  getAllOrders,
-  updateOrderStatus,
-} = require("../controllers/orderController");
+router.post("/", authMiddleware, async (req, res) => {
+  const { items, totalPrice } = req.body;
 
-const { protect } = require("../middleware/authMiddleware");
-const { adminOnly } = require("../middleware/adminMiddleware");
+  const order = await Order.create({
+    user: req.user._id,
+    items,
+    totalPrice,
+  });
 
-// CUSTOMER
-router.post("/", protect, createOrder);
-router.get("/my", protect, getMyOrders);
+  res.status(201).json(order);
+});
 
-// ADMIN
-router.get("/", protect, adminOnly, getAllOrders);
-router.put("/:id", protect, adminOnly, updateOrderStatus);
+router.get("/", authMiddleware, async (req, res) => {
+  const orders = await Order.find().populate("user");
+  res.json(orders);
+});
 
-module.exports = router;
+export default router;

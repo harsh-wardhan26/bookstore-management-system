@@ -1,24 +1,18 @@
-const express = require("express");
-const router = express.Router();
-
-const {
+import express from "express";
+import {
   addBook,
   getBooks,
   getBookById,
   updateBook,
   deleteBook,
-} = require("../controllers/bookController");
+} from "../controllers/bookController.js";
 
-const { protect } = require("../middleware/authMiddleware");
-const { adminOnly } = require("../middleware/adminMiddleware");
+const router = express.Router();
 
-// CUSTOMER + ADMIN
-router.get("/", protect, getBooks);
-router.get("/:id", protect, getBookById);
+router.get("/", getBooks);
+router.get("/:id", getBookById);
+router.post("/", addBook);
+router.put("/:id", updateBook);
+router.delete("/:id", deleteBook);
 
-// ADMIN ONLY
-router.post("/", protect, adminOnly, addBook);
-router.put("/:id", protect, adminOnly, updateBook);
-router.delete("/:id", protect, adminOnly, deleteBook);
-
-module.exports = router;
+export default router;
