@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../services/api";
 
 function Dashboard() {
@@ -67,7 +68,15 @@ function Dashboard() {
   return (
     <div className="container mt-5">
 
-      <h1 className="text-center mb-4">📚 Bookstore Dashboard</h1>
+      {/* ================= HEADER ================= */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1>📚 Bookstore Dashboard</h1>
+
+        {/* 🔥 NEW BUTTON ADDED */}
+        <Link to="/admin/orders" className="btn btn-dark">
+          📦 View Orders
+        </Link>
+      </div>
 
       {/* ================= FORM CARD ================= */}
       <div className="card shadow-sm p-4 mb-4">
