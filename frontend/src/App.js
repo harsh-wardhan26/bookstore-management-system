@@ -6,16 +6,56 @@ import Books from "./pages/Books";
 import Cart from "./pages/Cart";
 import AdminOrders from "./pages/AdminOrders";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   return (
     <BrowserRouter>
+
       <Routes>
+
+        {/* Public */}
         <Route path="/" element={<Books />} />
-        <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<Dashboard />} />
-        <Route path="/admin/orders" element={<AdminOrders />} />
+
+        {/* ⭐ CART SHOULD BE PUBLIC (FIXED) */}
+        <Route path="/cart" element={<Cart />} />
+
+        {/* Admin only */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <Dashboard />
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/orders"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <AdminOrders />
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        theme="colored"
+      />
+
     </BrowserRouter>
   );
 }

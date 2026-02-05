@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { toast } from "react-toastify";
 
 function Dashboard() {
+  const navigate = useNavigate();
+
   const [books, setBooks] = useState([]);
 
   const [title, setTitle] = useState("");
@@ -13,47 +16,80 @@ function Dashboard() {
 
   const [editId, setEditId] = useState(null);
 
-  // ================= FETCH =================
+
+  // ================= FETCH BOOKS =================
   const fetchBooks = async () => {
-    const res = await api.get("/books");
-    setBooks(res.data);
+    try {
+      const res = await api.get("/books?page=1&limit=50");
+      setBooks(res.data.books);
+    } catch {
+      toast.error("Failed to load books ❌");
+    }
   };
 
   useEffect(() => {
     fetchBooks();
   }, []);
 
+
+  // ================= LOGOUT =================
+  const logout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+
+    toast.info("Logged out 👋");
+
+    setTimeout(() => {
+      navigate("/", { replace: true });
+    }, 800);
+  };
+
+
   // ================= ADD / UPDATE =================
   const saveBook = async () => {
-    const data = {
-      title,
-      author,
-      price: Number(price),
-      category,
-      stock: Number(stock || 0),
-    };
+    try {
+      const data = {
+        title,
+        author,
+        price: Number(price),
+        category,
+        stock: Number(stock || 0),
+      };
 
-    if (editId) {
-      await api.put(`/books/${editId}`, data);
-      setEditId(null);
-    } else {
-      await api.post("/books", data);
+      if (editId) {
+        await api.put(`/books/${editId}`, data);
+        toast.success("Book updated successfully ✏️");
+        setEditId(null);
+      } else {
+        await api.post("/books", data);
+        toast.success("Book added successfully 📚");
+      }
+
+      // clear form
+      setTitle("");
+      setAuthor("");
+      setPrice("");
+      setCategory("");
+      setStock("");
+
+      fetchBooks();
+    } catch {
+      toast.error("Operation failed ❌");
     }
-
-    setTitle("");
-    setAuthor("");
-    setPrice("");
-    setCategory("");
-    setStock("");
-
-    fetchBooks();
   };
+
 
   // ================= DELETE =================
   const deleteBook = async (id) => {
-    await api.delete(`/books/${id}`);
-    fetchBooks();
+    try {
+      await api.delete(`/books/${id}`);
+      toast.success("Book deleted 🗑️");
+      fetchBooks();
+    } catch {
+      toast.error("Delete failed ❌");
+    }
   };
+
 
   // ================= EDIT =================
   const editBook = (book) => {
@@ -63,7 +99,10 @@ function Dashboard() {
     setPrice(book.price);
     setCategory(book.category || "");
     setStock(book.stock || 0);
+
+    toast.info("Editing book ✏️");
   };
+
 
   return (
     <div className="container mt-5">
@@ -72,13 +111,19 @@ function Dashboard() {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>📚 Bookstore Dashboard</h1>
 
-        {/* 🔥 NEW BUTTON ADDED */}
-        <Link to="/admin/orders" className="btn btn-dark">
-          📦 View Orders
-        </Link>
+        <div>
+          <Link to="/admin/orders" className="btn btn-dark me-2">
+            📦 Orders
+          </Link>
+
+          <button className="btn btn-danger" onClick={logout}>
+            Logout
+          </button>
+        </div>
       </div>
 
-      {/* ================= FORM CARD ================= */}
+
+      {/* ================= FORM ================= */}
       <div className="card shadow-sm p-4 mb-4">
         <h4>{editId ? "Edit Book" : "Add Book"}</h4>
 
@@ -143,6 +188,7 @@ function Dashboard() {
         </div>
       </div>
 
+
       {/* ================= TABLE ================= */}
       <div className="card shadow-sm p-4">
 
@@ -192,6 +238,7 @@ function Dashboard() {
         </table>
 
       </div>
+
     </div>
   );
 }

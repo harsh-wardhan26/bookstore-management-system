@@ -7,22 +7,39 @@ function Books() {
   const [books, setBooks] = useState([]);
   const [search, setSearch] = useState("");
 
+  // ⭐ pagination states
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   const { addToCart, cart } = useCart();
 
-  const fetchBooks = async () => {
-    const res = await api.get("/books");
-    setBooks(res.data);
+
+  // ================= FETCH BOOKS WITH PAGINATION =================
+  const fetchBooks = async (pageNo = 1) => {
+    try {
+      const res = await api.get(`/books?page=${pageNo}&limit=8`);
+
+      setBooks(res.data.books);          // backend sends books array
+      setTotalPages(res.data.totalPages);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  useEffect(() => {
-    fetchBooks();
-  }, []);
 
+  // fetch whenever page changes
+  useEffect(() => {
+    fetchBooks(page);
+  }, [page]);
+
+
+  // ================= SEARCH =================
   const filteredBooks = books.filter(
     (book) =>
       book.title.toLowerCase().includes(search.toLowerCase()) ||
       book.author.toLowerCase().includes(search.toLowerCase())
   );
+
 
   return (
     <div className="container mt-5">
@@ -32,7 +49,6 @@ function Books() {
         <h2>📚 Book Store</h2>
 
         <div>
-          {/* ✅ IMPORTANT */}
           <Link to="/cart" className="btn btn-success me-2">
             🛒 Cart ({cart.length})
           </Link>
@@ -43,6 +59,8 @@ function Books() {
         </div>
       </div>
 
+
+      {/* Search */}
       <input
         className="form-control mb-4"
         placeholder="Search..."
@@ -50,6 +68,8 @@ function Books() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
+
+      {/* Books Grid */}
       <div className="row">
         {filteredBooks.map((book) => (
           <div key={book._id} className="col-md-3 mb-4">
@@ -67,6 +87,32 @@ function Books() {
             </div>
           </div>
         ))}
+      </div>
+
+
+      {/* ================= PAGINATION UI ================= */}
+      <div className="d-flex justify-content-center mt-4 gap-3">
+
+        <button
+          className="btn btn-secondary"
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+        >
+          Prev
+        </button>
+
+        <span className="align-self-center">
+          Page {page} of {totalPages}
+        </span>
+
+        <button
+          className="btn btn-secondary"
+          disabled={page === totalPages}
+          onClick={() => setPage(page + 1)}
+        >
+          Next
+        </button>
+
       </div>
 
     </div>
