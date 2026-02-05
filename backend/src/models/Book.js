@@ -2,11 +2,28 @@ import mongoose from "mongoose";
 
 const bookSchema = new mongoose.Schema(
   {
-    title: String,
-    author: String,
-    price: Number,
-    category: String,
-    stock: Number,
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    author: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    category: {
+      type: String,
+      default: "General",
+    },
+    stock: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

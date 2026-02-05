@@ -43,7 +43,7 @@ export const login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({ token, role: user.role });
+    res.json({ token });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
